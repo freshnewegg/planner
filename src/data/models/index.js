@@ -8,11 +8,17 @@
  */
 
 import sequelize from '../sequelize';
-import User from './User';
-import UserLogin from './UserLogin';
-import UserClaim from './UserClaim';
-import UserProfile from './UserProfile';
+import User from './Users/User';
+import UserLogin from './Users/UserLogin';
+import UserClaim from './Users/UserClaim';
+import UserProfile from './Users/UserProfile';
+import Plan from './Plan/Plan';
+import FoodActivity from './Plan/FoodActivity';
+import ToDoActivity from './Plan/ToDoActivity';
 
+/**
+ * Set up user relationships
+ */
 User.hasMany(UserLogin, {
   foreignKey: 'userId',
   as: 'logins',
@@ -30,6 +36,23 @@ User.hasMany(UserClaim, {
 User.hasOne(UserProfile, {
   foreignKey: 'userId',
   as: 'profile',
+  onUpdate: 'cascade',
+  onDelete: 'cascade',
+});
+
+/**
+ * Set up Plan relationships
+ */
+Plan.hasMany(FoodActivity, {
+  foreignKey: 'planId',
+  as: 'foodactivities',
+  onUpdate: 'cascade',
+  onDelete: 'cascade',
+});
+
+Plan.hasMany(ToDoActivity, {
+  foreignKey: 'planId',
+  as: 'todoactivities',
   onUpdate: 'cascade',
   onDelete: 'cascade',
 });

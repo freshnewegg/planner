@@ -14,7 +14,7 @@
 }
 
 .root {
-  background: #373277;
+  background: #fff;
   color: #fff;
 }
 
@@ -36,14 +36,6 @@
 
 .banner {
   text-align: center;
-}
-
-.bannerTitle {
-  margin: 0;
-  padding: 10px;
-  font-weight: normal;
-  font-size: 4em;
-  line-height: 1em;
 }
 
 .bannerDesc {
