@@ -30,6 +30,8 @@ import schema from './data/schema';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import config from './config';
 
+const mongoose = require('mongoose');
+
 const app = express();
 
 //
@@ -164,6 +166,11 @@ app.get('*', async (req, res, next) => {
 });
 
 //
+// Register server-side plan creation middleware
+// -----------------------------------------------------------------------------
+// app.post('/plan', (req, res) => {});
+
+//
 // Error handling
 // -----------------------------------------------------------------------------
 const pe = new PrettyError();
@@ -184,6 +191,21 @@ app.use((err, req, res, next) => {
   );
   res.status(err.status || 500);
   res.send(`<!doctype html>${html}`);
+});
+
+//
+// Connect to mongo
+// -----------------------------------------------------------------------------
+const mongoDB = 'mongodb://localhost:27017/letsdosomethingplanner';
+mongoose.connect(mongoDB, {
+  useMongoClinet: true,
+});
+const db = mongoose.connection;
+db.on('error', () => {
+  console.info('---FAILED to connect to mongoose');
+});
+db.once('open', () => {
+  console.info('+++Connected to mongoose');
 });
 
 //

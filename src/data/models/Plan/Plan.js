@@ -23,7 +23,7 @@ const Plan = Model.define(
     },
 
     permalink: {
-      type: DataType.URL,
+      type: DataType.STRING(255),
       validate: { isUrl: true },
     },
   },
