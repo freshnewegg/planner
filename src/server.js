@@ -29,6 +29,7 @@ import models from './data/models';
 import schema from './data/schema';
 import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import config from './config';
+import Plan from './data/models/Plan/Plan';
 
 const mongoose = require('mongoose');
 
@@ -168,7 +169,27 @@ app.get('*', async (req, res, next) => {
 //
 // Register server-side plan creation middleware
 // -----------------------------------------------------------------------------
-// app.post('/plan', (req, res) => {});
+app.post('/plan', (req, res) => {
+  const myPlan = new Plan(req.body);
+  myPlan
+    .save()
+    .then(item => {
+      res.send(`item saved to database${item}`);
+    })
+    .catch(err => {
+      res.status(400).send('unable to save to database');
+      console.info(err);
+    });
+});
+
+app.get('/plan/:id', (req, res) => {
+  const id = req.params.id;
+  Plan.findById(id, (err, plan) => {
+    res.send(plan);
+  }).catch(err => {
+    res.status(404).send('not found');
+  });
+});
 
 //
 // Error handling
@@ -197,9 +218,7 @@ app.use((err, req, res, next) => {
 // Connect to mongo
 // -----------------------------------------------------------------------------
 const mongoDB = 'mongodb://localhost:27017/letsdosomethingplanner';
-mongoose.connect(mongoDB, {
-  useMongoClinet: true,
-});
+mongoose.connect(mongoDB);
 const db = mongoose.connection;
 db.on('error', () => {
   console.info('---FAILED to connect to mongoose');
