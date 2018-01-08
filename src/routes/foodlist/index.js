@@ -13,11 +13,11 @@ import Layout from '../../components/Layout';
 
 function action() {
   return {
-    chunks: ['foodlist'],
+    chunks: ['home'],
     title: 'Food List',
     component: (
       <Layout>
-        <FoodList />
+        <FoodList/>
       </Layout>
     ),
   };

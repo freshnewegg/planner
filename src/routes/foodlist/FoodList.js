@@ -9,15 +9,21 @@
 
 import React from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import s from './FoodList.css';
+import Map from '../../components/Map/map';
 
 class FoodList extends React.Component {
   static propTypes = {};
 
+  url = "https://api.yelp.com/v3/businesses/search?term=";
+
   render() {
     return (
       <div className={s.root}>
-        <div className={s.container} />
-        <h1>Choose A Restaurant</h1>
+        <div className={s.container} >
+          <h1>Choose Breakfast</h1>
+          <Map/>
+        </div>
       </div>
     );
   }
