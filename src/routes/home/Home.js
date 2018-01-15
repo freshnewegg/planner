@@ -42,21 +42,48 @@ class Home extends React.Component {
   }
 
   render() {
-    const events = new Dayz.EventsCollection([
+    const old_events = [
       {
         content: 'Event',
         resizable: { step: 15 },
         range: moment.range(
-          this.state.startDate,
-          this.state.startDate.clone().add(1, 'hour'),
+          this.state.startDate.clone().add(8, 'hour'),
+          this.state.startDate.clone().add(9, 'hour'),
         ),
       },
-    ]);
+      {
+        content: 'Event2',
+        resizable: { step: 15 },
+        range: moment.range(
+          this.state.startDate.clone().add(8, 'hour'),
+          this.state.startDate.clone().add(9, 'hour'),
+        ),
+      },
+    ];
+
+    console.log('EVENTS');
+    console.log(old_events);
+    console.log(this.props.events);
+
+    const newEvents = [];
+    for (let i = 0; i < this.props.events.length; i++) {
+      const event = this.props.events[i];
+      newEvents.push({
+        content: event.content,
+        resizable: event.resizable,
+        range: moment.range(moment(event.range.start), moment(event.range.end)),
+      });
+    }
+
+    const events = new Dayz.EventsCollection(newEvents);
     // if (this.props.location) {
-    const lat = this.props.location[0]
+
+    console.log('LOCATION');
+    console.log(this.props.location);
+    const lat = this.props.location
       ? this.props.location[0].geometry.location.lat()
       : '41';
-    const lng = this.props.location[0]
+    const lng = this.props.location
       ? this.props.location[0].geometry.location.lng()
       : '-71';
 
@@ -96,6 +123,7 @@ class Home extends React.Component {
 
 const mapStateToProps = state => ({
   location: state.map.location,
+  events: state.plan.events,
 });
 
 const mapDispatchToProps = dispatch => ({

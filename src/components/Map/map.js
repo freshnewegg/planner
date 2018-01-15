@@ -35,14 +35,6 @@ const MapWithASearchBox = compose(
         markers: [],
         onMapMounted: ref => {
           refs.map = ref;
-          // console.log(ref.getCenter());
-          // console.log(ref.getCenter().lat());
-          if (ref) {
-            this.props.onMapChange({
-              lat: ref.getCenter().lat(),
-              lng: ref.getCenter().lng(),
-            });
-          }
         },
         onBoundsChanged: () => {
           this.setState({
