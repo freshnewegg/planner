@@ -10,14 +10,15 @@
 import React from 'react';
 import FoodList from './FoodList';
 import Layout from '../../components/Layout';
+import nodeFetch from 'node-fetch';
 
-function action() {
+function action(context) {
   return {
     chunks: ['home'],
     title: 'Food List',
     component: (
       <Layout>
-        <FoodList/>
+        <FoodList params={context} />
       </Layout>
     ),
   };

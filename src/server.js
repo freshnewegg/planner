@@ -32,6 +32,8 @@ import configureStore from './store/configureStore';
 import { setRuntimeVariable } from './actions/runtime';
 import config from './config';
 import Plan from './data/models/Plan/Plan';
+import 'react-bootstrap-table';
+import * as debug from 'debug';
 
 const mongoose = require('mongoose');
 
@@ -115,76 +117,142 @@ app.use(
 //
 // Register server-side rendering middleware
 // -----------------------------------------------------------------------------
+
+app.post('/food/breakfast', async (req, res) => {
+  console.log(req.body);
+  console.log('POSTING');
+
+  // use existing plan if there,
+  // build the correct plan by adding in the new event
+
+  res.redirect('/');
+});
+
+async function setUpBase(initialState, req, res) {
+  const css = new Set();
+
+  // Universal HTTP client
+  const fetch = createFetch(nodeFetch, {
+    baseUrl: config.api.serverUrl,
+    cookie: req.headers.cookie,
+  });
+
+  const store = configureStore(initialState, {
+    fetch,
+    // I should not use `history` on server.. but how I do redirection? follow universal-router
+  });
+
+  store.dispatch(
+    setRuntimeVariable({
+      name: 'initialNow',
+      value: Date.now(),
+    }),
+  );
+
+  // Global (context) variables that can be easily accessed from any React component
+  // https://facebook.github.io/react/docs/context.html
+  const context = {
+    // Enables critical path CSS rendering
+    // https://github.com/kriasoft/isomorphic-style-loader
+    insertCss: (...styles) => {
+      // eslint-disable-next-line no-underscore-dangle
+      styles.forEach(style => css.add(style._getCss()));
+    },
+    fetch,
+    // You can access redux through react-redux connect
+    store,
+    storeSubscription: null,
+  };
+
+  const route = await router.resolve({
+    ...context,
+    pathname: req.path,
+    query: req.query,
+  });
+
+  if (route.redirect) {
+    res.redirect(route.status || 302, route.redirect);
+    return;
+  }
+
+  const data = { ...route };
+  data.children = ReactDOM.renderToString(
+    <App context={context}>{route.component}</App>,
+  );
+  data.styles = [{ id: 'css', cssText: [...css].join('') }];
+  data.scripts = [assets.vendor.js];
+  if (route.chunks) {
+    data.scripts.push(...route.chunks.map(chunk => assets[chunk].js));
+  }
+  data.scripts.push(assets.client.js);
+  data.app = {
+    apiUrl: config.api.clientUrl,
+    state: context.store.getState(),
+  };
+
+  console.log('WTF');
+
+  const html = ReactDOM.renderToStaticMarkup(<Html {...data} />);
+  res.status(route.status || 200);
+  res.send(`<!doctype html>${html}`);
+}
+
+// register custom endpoints
+app.get('/food/breakfast', async (req, res, next) => {
+  // TODO: SANITIZE USER INPUT
+
+  const key =
+    'Bearer nBc98wIZ6B7xaCjUNT97AZ1SEEn70ZKpzMXc_dwJsq1CpQdq8s5PXs8uXX8Yv9L6dqPHR-1HdAC8sJ_qO-pnG016cckNTJnfSP2keueNPfvbBdAeIGsi6yeIu2dYWnYx';
+  const url = `https://api.yelp.com/v3/businesses/search?term=breakfast&latitude=${
+    req.query.latitude
+  }&longitude=${req.query.longitude}`;
+
+  const result = await nodeFetch(url, {
+    headers: { Authorization: key },
+  }).then(res => res.json());
+
+  const initialState = {
+    restaurants: result,
+  };
+
+  await setUpBase(initialState, req, res);
+});
+
 app.get('*', async (req, res, next) => {
+  console.log(req.path);
   try {
-    const css = new Set();
+    // const css = new Set();
+    //
+    // // Universal HTTP client
+    // const fetch = createFetch(nodeFetch, {
+    //   baseUrl: config.api.serverUrl,
+    //   cookie: req.headers.cookie,
+    // });
 
-    // Universal HTTP client
-    const fetch = createFetch(nodeFetch, {
-      baseUrl: config.api.serverUrl,
-      cookie: req.headers.cookie,
-    });
-
-    const initialState = {
-      user: req.user || null,
-    };
-
-    const store = configureStore(initialState, {
-      fetch,
-      // I should not use `history` on server.. but how I do redirection? follow universal-router
-    });
-
-    store.dispatch(
-      setRuntimeVariable({
-        name: 'initialNow',
-        value: Date.now(),
-      }),
-    );
-
-    // Global (context) variables that can be easily accessed from any React component
-    // https://facebook.github.io/react/docs/context.html
-    const context = {
-      // Enables critical path CSS rendering
-      // https://github.com/kriasoft/isomorphic-style-loader
-      insertCss: (...styles) => {
-        // eslint-disable-next-line no-underscore-dangle
-        styles.forEach(style => css.add(style._getCss()));
-      },
-      fetch,
-      // You can access redux through react-redux connect
-      store,
-      storeSubscription: null,
-    };
-
-    const route = await router.resolve({
-      ...context,
-      pathname: req.path,
-      query: req.query,
-    });
-
-    if (route.redirect) {
-      res.redirect(route.status || 302, route.redirect);
-      return;
+    let initialState = null;
+    if (req.path == '/') {
+      initialState = {
+        // set default map location to new york
+        map: {
+          location: {
+            0: {
+              geometry: {
+                location: {
+                  lat: () => 40.7127753,
+                  lng: () => -74.0059728,
+                },
+              },
+            },
+          },
+        },
+      };
+    } else {
+      initialState = {
+        user: req.user || null,
+      };
     }
 
-    const data = { ...route };
-    data.children = ReactDOM.renderToString(
-      <App context={context}>{route.component}</App>,
-    );
-    data.styles = [{ id: 'css', cssText: [...css].join('') }];
-    data.scripts = [assets.vendor.js];
-    if (route.chunks) {
-      data.scripts.push(...route.chunks.map(chunk => assets[chunk].js));
-    }
-    data.scripts.push(assets.client.js);
-    data.app = {
-      apiUrl: config.api.clientUrl,
-      state: context.store.getState(),
-    };
-
-    const html = ReactDOM.renderToStaticMarkup(<Html {...data} />);
-    res.status(route.status || 200);
-    res.send(`<!doctype html>${html}`);
+    await setUpBase(initialState, req, res);
   } catch (err) {
     next(err);
   }
