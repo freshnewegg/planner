@@ -20,6 +20,7 @@ import PlacesWithStandaloneSearchBox from '../../components/Map/SearchBox';
 import { connect } from 'react-redux';
 import { setMapVariable } from '../../actions/map';
 
+
 const {
   SearchBox,
 } = require('react-google-maps/lib/components/places/SearchBox');
@@ -42,29 +43,6 @@ class Home extends React.Component {
   }
 
   render() {
-    const old_events = [
-      {
-        content: 'Event',
-        resizable: { step: 15 },
-        range: moment.range(
-          this.state.startDate.clone().add(8, 'hour'),
-          this.state.startDate.clone().add(9, 'hour'),
-        ),
-      },
-      {
-        content: 'Event2',
-        resizable: { step: 15 },
-        range: moment.range(
-          this.state.startDate.clone().add(8, 'hour'),
-          this.state.startDate.clone().add(9, 'hour'),
-        ),
-      },
-    ];
-
-    console.log('EVENTS');
-    console.log(old_events);
-    console.log(this.props.events);
-
     const newEvents = [];
     for (let i = 0; i < this.props.events.length; i++) {
       const event = this.props.events[i];
@@ -113,6 +91,7 @@ class Home extends React.Component {
             </a>
           </div>
         </div>
+
         <div className={s.timeline}>
           <Dayz display="day" date={this.state.startDate} events={events} />
         </div>

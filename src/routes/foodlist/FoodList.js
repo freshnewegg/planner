@@ -16,8 +16,20 @@ import { connect } from 'react-redux';
 import BasicTable from '../../components/Layout/basic-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import { Col, Panel } from 'react-bootstrap';
+import Lightbox from 'react-image-lightbox';
+
+const images = [
+  'https://yt3.ggpht.com/-KdgJnz1HIdQ/AAAAAAAAAAI/AAAAAAAAAAA/4vVN7slJqj4/s900-c-k-no-mo-rj-c0xffffff/photo.jpg'
+];
 
 class FoodList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      photoIndex: 0,
+      isOpen: true,
+    };
+  }
   static propTypes = {};
 
   render() {
@@ -41,42 +53,32 @@ class FoodList extends React.Component {
       }
     }
 
-    // <table id={s.customers}>
-    //   <tbody>
-    //     <tr>
-    //       <th>Restaurant</th>
-    //       <th>type</th>
-    //       <th>average rating</th>
-    //       <th>price range</th>
-    //       <th>address</th>
-    //       <th>Open Right Now?</th>
-    //       <th>website</th>
-    //     </tr>
-    //     {[1,2,3].map((num) => {
-    // {/*<tr>*/}
-    // {/*<td>{num}</td>*/}
-    // {/*</tr>*/}
-    // {/*})}*/}
-    // {/*</tbody>*/}
-    // {/*</table>*/}
+    const { photoIndex, isOpen } = this.state;
 
-    // console.log(places.length);
-
-    // let products = [{
-    //   id: 1,
-    //   name: "Product1",
-    //   price: 120
-    // }, {
-    //   id: 2,
-    //   name: "Product2",
-    //   price: 80
-    // }];
     return (
       <div className={s.root}>
         <div className={s.container}>
           <h1>Filter by area</h1>
           <Map />
           <h1>Choose Breakfast</h1>
+          {isOpen && (
+            <Lightbox
+              mainSrc={images[photoIndex]}
+              nextSrc={images[(photoIndex + 1) % images.length]}
+              prevSrc={images[(photoIndex + images.length - 1) % images.length]}
+              onCloseRequest={() => this.setState({ isOpen: false })}
+              onMovePrevRequest={() =>
+              this.setState({
+                photoIndex: (photoIndex + images.length - 1) % images.length,
+              })
+            }
+              onMoveNextRequest={() =>
+              this.setState({
+                photoIndex: (photoIndex + 1) % images.length,
+              })
+            }
+            />
+          )}
           <Col md={15}>
             <Panel header="A basic react-bootstrap-table">
               <BasicTable restaurants={places} />

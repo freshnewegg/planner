@@ -8,32 +8,13 @@ import { addEvent } from '../../actions/plan';
 import moment from 'moment';
 import Dayz from 'dayz';
 
-// /**
-//  * submit the id of the restaurant selected to be saved in the backend
-//  * @param cell
-//  * @param row
-//  * @returns {string}
-//  */
-// function buttonFormatter(cell, row) {
-//   console.log(row);
-//   return (
-//     <div><Link to="/" onClick={this.addEvent(row)}><button>{row.id}</button></Link></div>
-//
-//   );
-// }
+const options = {
+  onRowClick: function(row) {
+    //make a fetch request to google places, get the place, get the images, query for images and display them
 
-// does a post request to server
-// function buttonFormatter(cell, row) {
-//   console.log(row);
-//   return (
-//     '' +
-//     '<form>' +
-//     `<input name="id" type="submit" value=${row.id} formmethod="post">${
-//       row.id
-//     }</input>` +
-//     '</form>'
-//   );
-// }
+
+  }
+};
 
 class BasicTable extends React.Component {
   constructor(props) {
@@ -42,7 +23,10 @@ class BasicTable extends React.Component {
     this.addEvent = this.addEvent.bind(this);
     this.state = {
       startDate: moment(),
+      lightboxIsOpen: false,
+      currentImage: 0,
     };
+
   }
 
   buttonFormatter(cell, row) {
@@ -70,41 +54,44 @@ class BasicTable extends React.Component {
     });
   }
 
-  render() {
+
+    render() {
     return (
-      <BootstrapTable data={this.props.restaurants}>
-        <TableHeaderColumn dataField="name" isKey width="15%">
-          Restaurant Name
-        </TableHeaderColumn>
-        <TableHeaderColumn
-          dataField="type"
-          width="20%"
-          tdStyle={{ whiteSpace: 'normal' }}
-        >
-          Type
-        </TableHeaderColumn>
-        <TableHeaderColumn dataField="rating" width="10%">
-          Avg Rating
-        </TableHeaderColumn>
-        <TableHeaderColumn dataField="price" width="10%">
-          Price
-        </TableHeaderColumn>
-        <TableHeaderColumn dataField="address" width="10%">
-          Address
-        </TableHeaderColumn>
-        <TableHeaderColumn dataField="hours" width="10%">
-          Hours Open
-        </TableHeaderColumn>
-        <TableHeaderColumn dataField="website" width="15%">
-          Website
-        </TableHeaderColumn>
-        <TableHeaderColumn
-          dataField="add"
-          width="10%"
-          dataFormat={this.buttonFormatter}
-        />
-        <TableHeaderColumn dataField="id" width="10%" hidden />
-      </BootstrapTable>
+      <div>
+        <BootstrapTable data={this.props.restaurants} hover={true} options={ options }>
+          <TableHeaderColumn dataField="name" isKey width="15%">
+            Restaurant Name
+          </TableHeaderColumn>
+          <TableHeaderColumn
+            dataField="type"
+            width="20%"
+            tdStyle={{ whiteSpace: 'normal' }}
+          >
+            Type
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="rating" width="10%">
+            Avg Rating
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="price" width="10%">
+            Price
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="address" width="10%">
+            Address
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="hours" width="10%">
+            Hours Open
+          </TableHeaderColumn>
+          <TableHeaderColumn dataField="website" width="15%">
+            Website
+          </TableHeaderColumn>
+          <TableHeaderColumn
+            dataField="add"
+            width="10%"
+            dataFormat={this.buttonFormatter}
+          />
+          <TableHeaderColumn dataField="id" width="10%" hidden />
+        </BootstrapTable>
+      </div>
     );
   }
 }
