@@ -7,26 +7,17 @@ import { connect } from 'react-redux';
 import { addEvent } from '../../actions/plan';
 import moment from 'moment';
 import Dayz from 'dayz';
-
-const options = {
-  onRowClick: function(row) {
-    //make a fetch request to google places, get the place, get the images, query for images and display them
-
-
-  }
-};
+import { setLightboxStatus, setSelectedActivity } from '../../actions/lightbox';
 
 class BasicTable extends React.Component {
   constructor(props) {
     super(props);
     this.buttonFormatter = this.buttonFormatter.bind(this);
     this.addEvent = this.addEvent.bind(this);
+    this.onSelectRow = this.onSelectRow.bind(this);
     this.state = {
       startDate: moment(),
-      lightboxIsOpen: false,
-      currentImage: 0,
     };
-
   }
 
   buttonFormatter(cell, row) {
@@ -54,11 +45,20 @@ class BasicTable extends React.Component {
     });
   }
 
+  onSelectRow(row) {
+    alert(`You click row id: ${row.id}`);
+    this.props.setLightBoxStatus(true);
+    this.props.selectActivity(`${row.name}+${row.address}`);
+  }
 
-    render() {
+  render() {
+    const options = {
+      onRowClick: this.onSelectRow,
+    };
+
     return (
       <div>
-        <BootstrapTable data={this.props.restaurants} hover={true} options={ options }>
+        <BootstrapTable data={this.props.restaurants} hover options={options}>
           <TableHeaderColumn dataField="name" isKey width="15%">
             Restaurant Name
           </TableHeaderColumn>
@@ -98,11 +98,18 @@ class BasicTable extends React.Component {
 
 const mapStateToProps = state => ({
   events: state.events,
+  lightboxOpen: state.lightbox.lightboxOpen,
 });
 
 const mapDispatchToProps = dispatch => ({
   addNewEvent: event => {
     dispatch(addEvent(event));
+  },
+  setLightBoxStatus: status => {
+    dispatch(setLightboxStatus(status));
+  },
+  selectActivity: activity => {
+    dispatch(setSelectedActivity(activity));
   },
 });
 

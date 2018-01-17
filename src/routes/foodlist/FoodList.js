@@ -17,9 +17,10 @@ import BasicTable from '../../components/Layout/basic-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import { Col, Panel } from 'react-bootstrap';
 import Lightbox from 'react-image-lightbox';
+import { setLightboxStatus } from '../../actions/lightbox';
 
-const images = [
-  'https://yt3.ggpht.com/-KdgJnz1HIdQ/AAAAAAAAAAI/AAAAAAAAAAA/4vVN7slJqj4/s900-c-k-no-mo-rj-c0xffffff/photo.jpg'
+let images = [
+  'https://yt3.ggpht.com/-KdgJnz1HIdQ/AAAAAAAAAAI/AAAAAAAAAAA/4vVN7slJqj4/s900-c-k-no-mo-rj-c0xffffff/photo.jpg',
 ];
 
 class FoodList extends React.Component {
@@ -27,10 +28,87 @@ class FoodList extends React.Component {
     super(props);
     this.state = {
       photoIndex: 0,
-      isOpen: true,
+      placesUrl:
+        'https://maps.googleapis.com/maps/api/place/textsearch/json?query=',
+      key: '&key=AIzaSyBupkySfNlvYgfI2QEs9-mXANFwL_JwTmM',
+      detailsUrl:
+        'https://maps.googleapis.com/maps/api/place/details/json?placeid=',
+      photoUrl:
+        'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=',
+      photoKey: '&key=AIzaSyBupkySfNlvYgfI2QEs9-mXANFwL_JwTmM',
     };
   }
   static propTypes = {};
+
+  componentWillReceiveProps(newProps) {
+    // create the fetch url
+    // console.log(this.state.placesUrl.concat(newProps.selectedActivity ? newProps.selectedActivity.replace(/ /g, '+') : '', this.state.key));
+    const url = this.state.placesUrl.concat(
+      newProps.selectedActivity
+        ? newProps.selectedActivity.replace(/ /g, '+')
+        : '',
+      this.state.key,
+    );
+
+    if (newProps.lightboxOpen) {
+      fetch(url).then(resp => {
+        resp.json().then(result => {
+          console.log(result);
+          if (result.results.length > 0) {
+            if (result.results[0]) {
+              // get the photo details
+              const detailUrl = this.state.detailsUrl.concat(
+                result.results[0].place_id,
+                this.state.key,
+              );
+
+              console.log(detailUrl);
+
+              fetch(detailUrl).then(resp => {
+                resp.json().then(result => {
+                  const photos = result.result.photos;
+                  if (photos.length == 10) {
+                    const newArr = [];
+                    for (let i = 0; i < 10; i++) {
+                      console.log(
+                        this.state.photoUrl.concat(
+                          photos[i].photo_reference,
+                          this.state.photoKey,
+                        ),
+                      );
+                      newArr.push(
+                        this.state.photoUrl.concat(
+                          photos[i].photo_reference,
+                          this.state.photoKey,
+                        ),
+                      );
+                    }
+                    images = newArr;
+                    this.setState({
+                      photoIndex: (this.state.photoIndex + 1) % images.length,
+                    });
+                  }
+                });
+              });
+
+              // console.log(photourl);
+              // fetch(photourl)
+              //   .then(resp => {
+              //     resp.json()
+              //   }).then(json => {
+              //     console.log(json);
+              // })
+            }
+          }
+        });
+      });
+    }
+  }
+
+  onClose() {
+    this.props.setLightBoxStatus(false);
+    this.setState({ imagesDone: true });
+  }
 
   render() {
     // console.log("REST")
@@ -53,7 +131,7 @@ class FoodList extends React.Component {
       }
     }
 
-    const { photoIndex, isOpen } = this.state;
+    const { photoIndex } = this.state;
 
     return (
       <div className={s.root}>
@@ -61,22 +139,22 @@ class FoodList extends React.Component {
           <h1>Filter by area</h1>
           <Map />
           <h1>Choose Breakfast</h1>
-          {isOpen && (
+          {this.props.lightboxOpen && (
             <Lightbox
               mainSrc={images[photoIndex]}
               nextSrc={images[(photoIndex + 1) % images.length]}
               prevSrc={images[(photoIndex + images.length - 1) % images.length]}
-              onCloseRequest={() => this.setState({ isOpen: false })}
+              onCloseRequest={() => this.onClose()}
               onMovePrevRequest={() =>
-              this.setState({
-                photoIndex: (photoIndex + images.length - 1) % images.length,
-              })
-            }
+                this.setState({
+                  photoIndex: (photoIndex + images.length - 1) % images.length,
+                })
+              }
               onMoveNextRequest={() =>
-              this.setState({
-                photoIndex: (photoIndex + 1) % images.length,
-              })
-            }
+                this.setState({
+                  photoIndex: (photoIndex + 1) % images.length,
+                })
+              }
             />
           )}
           <Col md={15}>
@@ -93,6 +171,16 @@ class FoodList extends React.Component {
 const mapStateToProps = state => ({
   location_lat: state.map.location ? state.map.location.lat : null,
   restaurants: state.restaurants,
+  lightboxOpen: state.lightbox.lightboxOpen,
+  selectedActivity: state.lightbox.selectedActivity,
 });
 
-export default connect(mapStateToProps)(withStyles(s, tablecss)(FoodList));
+const mapDispatchToProps = dispatch => ({
+  setLightBoxStatus: status => {
+    dispatch(setLightboxStatus(status));
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+  withStyles(s, tablecss)(FoodList),
+);

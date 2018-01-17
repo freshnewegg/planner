@@ -20,7 +20,6 @@ import PlacesWithStandaloneSearchBox from '../../components/Map/SearchBox';
 import { connect } from 'react-redux';
 import { setMapVariable } from '../../actions/map';
 
-
 const {
   SearchBox,
 } = require('react-google-maps/lib/components/places/SearchBox');
