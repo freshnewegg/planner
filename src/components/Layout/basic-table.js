@@ -35,20 +35,45 @@ class BasicTable extends React.Component {
    */
   addEvent(row) {
     console.log('ADDING');
+    // find first opening in the day however short it is max 1 hour
+    // find the last event in the day and stick new 1 to end of it if its within the day
+    let end = 8;
+    console.log(this.props.events);
+    for (let i = 0; i < this.props.events.length; i++) {
+      end = Math.max(
+        end,
+        new moment(this.props.events[i].range.end).get('hour'),
+      );
+    }
+
+    console.log('END');
+    console.log(end);
+
     this.props.addNewEvent({
       content: row.name,
+      id: row.id,
       resizable: { step: 15 },
       range: moment.range(
-        this.state.startDate.clone().add(8, 'hour'),
-        this.state.startDate.clone().add(9, 'hour'),
+        this.state.startDate
+          .clone()
+          .startOf('day')
+          .add(end, 'hour'),
+        this.state.startDate
+          .clone()
+          .startOf('day')
+          .add(end + 1 < 24 ? end + 1 : end, 'hour'),
       ),
     });
   }
 
-  onSelectRow(row) {
-    alert(`You click row id: ${row.id}`);
-    this.props.setLightBoxStatus(true);
-    this.props.selectActivity(`${row.name}+${row.address}`);
+  onSelectRow(row, col) {
+    alert(`You click row id: ${col}`);
+
+    // TODO: make dis not # of columns
+    if (col < 7) {
+      this.props.setLightBoxStatus(true);
+      this.props.selectActivity(`${row.name}+${row.address}`);
+    }
   }
 
   render() {
@@ -97,7 +122,7 @@ class BasicTable extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  events: state.events,
+  events: state.plan.events,
   lightboxOpen: state.lightbox.lightboxOpen,
 });
 

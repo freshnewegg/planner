@@ -19,6 +19,7 @@ import Link from '../../components/Link';
 import PlacesWithStandaloneSearchBox from '../../components/Map/SearchBox';
 import { connect } from 'react-redux';
 import { setMapVariable } from '../../actions/map';
+import { removeEvent } from '../../actions/plan';
 
 const {
   SearchBox,
@@ -31,8 +32,10 @@ class Home extends React.Component {
     super(props);
     this.state = {
       startDate: moment(),
+      startDate_str: moment().toISOString(),
     };
     this.handleDateSelect = this.handleDateSelect.bind(this);
+    this.onCloseClick = this.onCloseClick.bind(this);
   }
 
   handleDateSelect(date) {
@@ -41,13 +44,20 @@ class Home extends React.Component {
     });
   }
 
+  onCloseClick(index) {
+    this.props.removeEvent(index);
+  }
+
   render() {
     const newEvents = [];
     for (let i = 0; i < this.props.events.length; i++) {
       const event = this.props.events[i];
+      console.log(event.id);
       newEvents.push({
         content: event.content,
         resizable: event.resizable,
+        id: i,
+        event_id: event.id,
         range: moment.range(moment(event.range.start), moment(event.range.end)),
       });
     }
@@ -55,14 +65,14 @@ class Home extends React.Component {
     const events = new Dayz.EventsCollection(newEvents);
     // if (this.props.location) {
 
-    console.log('LOCATION');
-    console.log(this.props.location);
-    const lat = this.props.location
-      ? this.props.location[0].geometry.location.lat()
-      : '41';
-    const lng = this.props.location
-      ? this.props.location[0].geometry.location.lng()
-      : '-71';
+    const lat =
+      this.props.location && this.props.location[0].geometry.location.lat
+        ? this.props.location[0].geometry.location.lat()
+        : '41';
+    const lng =
+      this.props.location && this.props.location[0].geometry.location.lng
+        ? this.props.location[0].geometry.location.lng()
+        : '-71';
 
     return (
       <div className={s.root}>
@@ -92,7 +102,12 @@ class Home extends React.Component {
         </div>
 
         <div className={s.timeline}>
-          <Dayz display="day" date={this.state.startDate} events={events} />
+          <Dayz
+            display="day"
+            date={this.state.startDate}
+            events={events}
+            onCloseClick={this.onCloseClick}
+          />
         </div>
       </div>
     );
@@ -107,6 +122,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   onMapChange: id => {
     dispatch(setMapVariable(id));
+  },
+  removeEvent: event => {
+    dispatch(removeEvent(event));
   },
 });
 
