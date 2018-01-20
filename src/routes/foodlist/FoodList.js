@@ -90,14 +90,6 @@ class FoodList extends React.Component {
                   }
                 });
               });
-
-              // console.log(photourl);
-              // fetch(photourl)
-              //   .then(resp => {
-              //     resp.json()
-              //   }).then(json => {
-              //     console.log(json);
-              // })
             }
           }
         });
@@ -111,8 +103,8 @@ class FoodList extends React.Component {
   }
 
   render() {
-    // console.log("REST")
-    console.log(this.props.restaurants);
+    console.log(this.props);
+    // console.log(this.props.restaurants);
     const places = [];
     if (this.props.restaurants) {
       for (let i = 0; i < this.props.restaurants.businesses.length; i++) {
@@ -171,6 +163,7 @@ class FoodList extends React.Component {
 const mapStateToProps = state => ({
   location_lat: state.map.location ? state.map.location.lat : null,
   restaurants: state.restaurants,
+  mapped_restaurants: state.mapped_restaurants,
   lightboxOpen: state.lightbox.lightboxOpen,
   selectedActivity: state.lightbox.selectedActivity,
 });

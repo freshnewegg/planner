@@ -67,8 +67,6 @@ class BasicTable extends React.Component {
   }
 
   onSelectRow(row, col) {
-    alert(`You click row id: ${col}`);
-
     // TODO: make dis not # of columns
     if (col < 7) {
       this.props.setLightBoxStatus(true);

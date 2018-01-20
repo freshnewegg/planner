@@ -31,7 +31,7 @@ import assets from './assets.json'; // eslint-disable-line import/no-unresolved
 import configureStore from './store/configureStore';
 import { setRuntimeVariable } from './actions/runtime';
 import config from './config';
-import Plan from './data/models/Plan/Plan';
+import Plan from './data/mongo/models/Plan';
 import 'react-bootstrap-table';
 import * as debug from 'debug';
 
@@ -119,7 +119,6 @@ app.use(
 // -----------------------------------------------------------------------------
 
 app.post('/food/breakfast', async (req, res) => {
-  console.log(req.body);
   console.log('POSTING');
 
   // use existing plan if there,
@@ -211,15 +210,25 @@ app.get('/food/breakfast', async (req, res, next) => {
     headers: { Authorization: key },
   }).then(res => res.json());
 
+  const mapped_restaurants = {};
+  for (let i = 0; i < result.businesses.length; i++) {
+    mapped_restaurants[result.businesses[i].id] = result.businesses[i];
+  }
+
   const initialState = {
     restaurants: result,
+    blah: 'BLAH',
+    mapped_restaurants,
   };
+
+  // console.log("INITIALSTATE");
+  // console.log(initialState);
 
   await setUpBase(initialState, req, res);
 });
 
 app.get('*', async (req, res, next) => {
-  console.log(req.path);
+  // console.log(req.path);
   try {
     // const css = new Set();
     //
@@ -262,16 +271,26 @@ app.get('*', async (req, res, next) => {
 // Register server-side plan creation middleware
 // -----------------------------------------------------------------------------
 app.post('/plan', (req, res) => {
-  const myPlan = new Plan(req.body);
+  const myPlan = new Plan({
+    city: req.body.city,
+    date: req.body.date,
+    activities: req.body.activities,
+  });
+
+  // res.json({link: "LINK"});
+  // TODO: collect the new activities, create them if they dont exist
   myPlan
     .save()
     .then(item => {
-      res.send(`item saved to database${item}`);
+      res.json({ link: item.permalink });
     })
     .catch(err => {
       res.status(400).send('unable to save to database');
       console.info(err);
     });
+
+  // TODO: create the plan if it doesnt exist with the permalink
+  // res.send(`hi`);
 });
 
 app.get('/plan/:id', (req, res) => {

@@ -20,6 +20,7 @@ import PlacesWithStandaloneSearchBox from '../../components/Map/SearchBox';
 import { connect } from 'react-redux';
 import { setMapVariable } from '../../actions/map';
 import { removeEvent } from '../../actions/plan';
+import { host } from '../../constants/';
 
 const {
   SearchBox,
@@ -33,9 +34,11 @@ class Home extends React.Component {
     this.state = {
       startDate: moment(),
       startDate_str: moment().toISOString(),
+      permalink: '',
     };
     this.handleDateSelect = this.handleDateSelect.bind(this);
     this.onCloseClick = this.onCloseClick.bind(this);
+    this.generatePermaLink = this.generatePermaLink.bind(this);
   }
 
   handleDateSelect(date) {
@@ -48,7 +51,42 @@ class Home extends React.Component {
     this.props.removeEvent(index);
   }
 
+  generatePermaLink() {
+    // will pass the plan to the server
+
+    const url = 'http://localhost:3000/plan/';
+    // console.log(this.props.mapped_restaurants);
+    // console.log(this.props.events);
+
+    console.log(
+      this.props.location
+        ? this.props.location[0].formatted_address
+        : 'New York, NY, USA',
+    );
+    console.log(this.state.startDate.toISOString());
+
+    if (this.props.location && this.state.startDate) {
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          city: this.props.location
+            ? this.props.location[0].formatted_address
+            : 'New York, NY, USA',
+          date: this.state.startDate.toISOString(),
+          activities: this.props.events,
+        }),
+      })
+        .then(res => res.json())
+        .then(ans => this.setState({ permalink: host.concat(ans.link) }));
+    }
+  }
+
   render() {
+    console.log(this.props);
     const newEvents = [];
     for (let i = 0; i < this.props.events.length; i++) {
       const event = this.props.events[i];
@@ -65,13 +103,14 @@ class Home extends React.Component {
     const events = new Dayz.EventsCollection(newEvents);
     // if (this.props.location) {
 
+    console.log(this.props.location);
     const lat =
       this.props.location && this.props.location[0].geometry.location.lat
-        ? this.props.location[0].geometry.location.lat()
+        ? this.props.location[0].geometry.location.lat
         : '41';
     const lng =
       this.props.location && this.props.location[0].geometry.location.lng
-        ? this.props.location[0].geometry.location.lng()
+        ? this.props.location[0].geometry.location.lng
         : '-71';
 
     return (
@@ -80,11 +119,14 @@ class Home extends React.Component {
           <div className={s.action_bar_wrapper}>
             <h1>Your Current Plan</h1>
             <h1>
-              Search Near: <PlacesWithStandaloneSearchBox />
+              Set Search Location: <PlacesWithStandaloneSearchBox />
             </h1>
           </div>
           <div className={s.action_bar_wrapper}>
-            <div>Permalink: www.fake.com</div>
+            <button type="button" onClick={() => this.generatePermaLink()}>
+              Generate Permalink
+            </button>
+            <div>Permalink: {this.state.permalink}</div>
             <div className={s.action_bar_wrapper}>
               <div className={s.date_text}>Date:</div>
               <DatePicker
@@ -117,6 +159,7 @@ class Home extends React.Component {
 const mapStateToProps = state => ({
   location: state.map.location,
   events: state.plan.events,
+  mapped_restaurants: state.mapped_restaurants,
 });
 
 const mapDispatchToProps = dispatch => ({

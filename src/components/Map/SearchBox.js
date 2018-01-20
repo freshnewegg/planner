@@ -34,6 +34,8 @@ const PlacesWithStandaloneSearchBox = compose(
           });
 
           // set the changed map location
+          console.log('CHANGE');
+          console.log(places);
           this.props.onMapChange(places);
         },
       });

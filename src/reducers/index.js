@@ -5,6 +5,7 @@ import map from './map';
 import restaurants from './restaurants';
 import plan from './plan';
 import lightbox from './lightbox';
+import mapped_restaurants from './mapped_restaurants';
 
 export default combineReducers({
   user,
@@ -13,4 +14,5 @@ export default combineReducers({
   restaurants,
   plan,
   lightbox,
+  mapped_restaurants,
 });
