@@ -217,7 +217,6 @@ app.get('/food/breakfast', async (req, res, next) => {
 
   const initialState = {
     restaurants: result,
-    blah: 'BLAH',
     mapped_restaurants,
   };
 
@@ -226,6 +225,24 @@ app.get('/food/breakfast', async (req, res, next) => {
 
   await setUpBase(initialState, req, res);
 });
+
+app.get('/plan/:id', (req, res) => {
+  const id = req.params.id;
+  Plan.find(
+    {
+      permalink: id,
+    },
+    (err, plan) => {
+      res.json(plan);
+    },
+  ).catch(err => {
+    res.status(404).send('not found');
+  });
+});
+
+/*
+CATCH ALL REMAINING GET REQUESTS
+ */
 
 app.get('*', async (req, res, next) => {
   // console.log(req.path);
@@ -291,15 +308,6 @@ app.post('/plan', (req, res) => {
 
   // TODO: create the plan if it doesnt exist with the permalink
   // res.send(`hi`);
-});
-
-app.get('/plan/:id', (req, res) => {
-  const id = req.params.id;
-  Plan.findById(id, (err, plan) => {
-    res.send(plan);
-  }).catch(err => {
-    res.status(404).send('not found');
-  });
 });
 
 //
