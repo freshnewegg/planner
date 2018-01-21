@@ -26,12 +26,12 @@ const MapWithASearchBox = compose(
     componentWillMount() {
       const refs = {};
 
+      console.log("MAPPPP");
+      console.log(this.props.location[0].geometry);
+
       this.setState({
         bounds: null,
-        center: {
-          lat: 41.9,
-          lng: -87.624,
-        },
+        center: this.props.location[0].geometry.location,
         markers: [],
         onMapMounted: ref => {
           refs.map = ref;
@@ -90,7 +90,7 @@ const MapWithASearchBox = compose(
     >
       <input
         type="text"
-        placeholder="Type Location Here"
+        placeholder="Search location..."
         style={{
           boxSizing: `border-box`,
           border: `1px solid transparent`,
@@ -114,7 +114,7 @@ const MapWithASearchBox = compose(
 ));
 
 const mapStateToProps = state => ({
-  location: state.location,
+  location: state.map.location,
 });
 
 const mapDispatchToProps = dispatch => ({

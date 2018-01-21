@@ -279,8 +279,8 @@ app.get('*', async (req, res, next) => {
             0: {
               geometry: {
                 location: {
-                  lat: () => 40.7127753,
-                  lng: () => -74.0059728,
+                  lat: '40.7127753',
+                  lng: '-74.0059728',
                 },
               },
             },

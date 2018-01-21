@@ -33,6 +33,7 @@ class Home extends React.Component {
     super(props);
     this.state = {
       permalink: '',
+      weather: '',
     };
     this.handleDateSelect = this.handleDateSelect.bind(this);
     this.onCloseClick = this.onCloseClick.bind(this);
@@ -82,6 +83,9 @@ class Home extends React.Component {
     }
   }
 
+  getWeather() {
+  }
+
   componentDidMount() {
     // TODO: set the current day to the day of the saved event
     if (this.props.events.length == 0 && this.props.saved_events != '') {
@@ -89,6 +93,22 @@ class Home extends React.Component {
       const startTime = moment(specifiedEvents[0].date);
       this.setState({ startDate: startTime });
     }
+
+    //WEATHER
+    // let location = this.props.location[0].formatted_address
+    //   ? this.props.location[0].formatted_address
+    //   : 'New York, NY, USA';
+    // console.log("LOCATION");
+    // console.log(location);
+    // let fixedLocation = (location).replace(/ /g,"+");
+    // let weather_url = 'http://api.openweathermap.org/data/2.5/forecast?q=' + fixedLocation +'&mode=json&APPID=84894b2f931242514ad4b3e74f9436d9';
+    //
+    // fetch(weather_url)
+    //   .then((res) =>
+    //   res.json())
+    //   .then(json => {
+    //     console.log(json);
+    //   })
   }
 
   render() {
@@ -115,16 +135,19 @@ class Home extends React.Component {
     }
 
     const events = new Dayz.EventsCollection(newEvents);
-    // if (this.props.location) {
 
     const lat =
-      this.props.location && this.props.location[0].geometry.location.lat
-        ? this.props.location[0].geometry.location.lat
-        : '41';
+      this.props.location && typeof this.props.location[0].geometry.location.lat === "function"
+        ? this.props.location[0].geometry.location.lat()
+        : this.props.location[0].geometry.location.lat;
     const lng =
-      this.props.location && this.props.location[0].geometry.location.lng
-        ? this.props.location[0].geometry.location.lng
-        : '-71';
+      this.props.location && typeof this.props.location[0].geometry.location.lng === "function"
+        ? this.props.location[0].geometry.location.lng()
+        : this.props.location[0].geometry.location.lng;
+
+    console.log("LOCATION");
+    console.log(lat);
+    console.log(lng);
 
     return (
       <div className={s.root}>
@@ -147,11 +170,10 @@ class Home extends React.Component {
                 onChange={this.handleDateSelect}
               />
             </div>
-            <div>Weather</div>
           </div>
           <div className={s.action_bar_wrapper}>
             <a href={`/food/breakfast?latitude=${lat}&longitude=${lng}`}>
-              <button type="button">Add Breakfast</button>
+              <button type="button">Add Breakfast</button>s
             </a>
           </div>
         </div>

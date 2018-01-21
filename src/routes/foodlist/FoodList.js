@@ -118,17 +118,17 @@ class FoodList extends React.Component {
           address: place.location.address1,
           hours: place.is_closed ? 'Closed' : 'Open',
           website: place.url,
-          id: place.id,
+          id: "ADD"
         });
       }
     }
+    // id: place.id,
 
     const { photoIndex } = this.state;
 
     return (
       <div className={s.root}>
         <div className={s.container}>
-          <h1>Filter by area</h1>
           <Map />
           <h1>Choose Breakfast</h1>
           {this.props.lightboxOpen && (
