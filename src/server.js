@@ -203,30 +203,34 @@ async function setUpBase(initialState, req, res) {
 app.get('/food/breakfast', async (req, res, next) => {
   // TODO: SANITIZE USER INPUT
 
-  const key =
-    'Bearer nBc98wIZ6B7xaCjUNT97AZ1SEEn70ZKpzMXc_dwJsq1CpQdq8s5PXs8uXX8Yv9L6dqPHR-1HdAC8sJ_qO-pnG016cckNTJnfSP2keueNPfvbBdAeIGsi6yeIu2dYWnYx';
-  const url = `https://api.yelp.com/v3/businesses/search?term=breakfast&latitude=${
-    req.query.latitude
-  }&longitude=${req.query.longitude}`;
+  try {
+    const key =
+      'Bearer nBc98wIZ6B7xaCjUNT97AZ1SEEn70ZKpzMXc_dwJsq1CpQdq8s5PXs8uXX8Yv9L6dqPHR-1HdAC8sJ_qO-pnG016cckNTJnfSP2keueNPfvbBdAeIGsi6yeIu2dYWnYx';
+    const url = `https://api.yelp.com/v3/businesses/search?term=breakfast&latitude=${
+      req.query.latitude
+    }&longitude=${req.query.longitude}`;
 
-  const result = await nodeFetch(url, {
-    headers: { Authorization: key },
-  }).then(res => res.json());
+    const result = await nodeFetch(url, {
+      headers: { Authorization: key },
+    }).then(res => res.json());
 
-  const mapped_restaurants = {};
-  for (let i = 0; i < result.businesses.length; i++) {
-    mapped_restaurants[result.businesses[i].id] = result.businesses[i];
+    const mapped_restaurants = {};
+    for (let i = 0; i < result.businesses.length; i++) {
+      mapped_restaurants[result.businesses[i].id] = result.businesses[i];
+    }
+
+    const initialState = {
+      restaurants: result,
+      mapped_restaurants,
+    };
+
+    // console.log("INITIALSTATE");
+    // console.log(initialState);
+
+    await setUpBase(initialState, req, res);
+  } catch (err) {
+    next(err);
   }
-
-  const initialState = {
-    restaurants: result,
-    mapped_restaurants,
-  };
-
-  // console.log("INITIALSTATE");
-  // console.log(initialState);
-
-  await setUpBase(initialState, req, res);
 });
 
 app.get('/plan/:id', async (req, res, next) => {
@@ -272,21 +276,7 @@ app.get('*', async (req, res, next) => {
 
     let initialState = null;
     if (req.path == '/') {
-      initialState = {
-        // set default map location to new york
-        map: {
-          location: {
-            0: {
-              geometry: {
-                location: {
-                  lat: '40.7127753',
-                  lng: '-74.0059728',
-                },
-              },
-            },
-          },
-        },
-      };
+      initialState = {};
     } else {
       initialState = {
         user: req.user || null,

@@ -26,7 +26,8 @@ const MapWithASearchBox = compose(
     componentWillMount() {
       const refs = {};
 
-      console.log("MAPPPP");
+      console.log('MAPPPP');
+      console.log(this.props.location);
       console.log(this.props.location[0].geometry);
 
       this.setState({

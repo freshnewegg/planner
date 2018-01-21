@@ -19,7 +19,7 @@ import Link from '../../components/Link';
 import PlacesWithStandaloneSearchBox from '../../components/Map/SearchBox';
 import { connect } from 'react-redux';
 import { setMapVariable } from '../../actions/map';
-import { removeEvent, setTime } from '../../actions/plan';
+import { removeEvent, setTime, changeEventTime } from '../../actions/plan';
 import { host } from '../../constants/';
 
 const {
@@ -38,6 +38,7 @@ class Home extends React.Component {
     this.handleDateSelect = this.handleDateSelect.bind(this);
     this.onCloseClick = this.onCloseClick.bind(this);
     this.generatePermaLink = this.generatePermaLink.bind(this);
+    this.onEventResize = this.onEventResize.bind(this);
   }
 
   handleDateSelect(date) {
@@ -83,8 +84,7 @@ class Home extends React.Component {
     }
   }
 
-  getWeather() {
-  }
+  getWeather() {}
 
   componentDidMount() {
     // TODO: set the current day to the day of the saved event
@@ -94,7 +94,7 @@ class Home extends React.Component {
       this.setState({ startDate: startTime });
     }
 
-    //WEATHER
+    // WEATHER
     // let location = this.props.location[0].formatted_address
     //   ? this.props.location[0].formatted_address
     //   : 'New York, NY, USA';
@@ -109,6 +109,16 @@ class Home extends React.Component {
     //   .then(json => {
     //     console.log(json);
     //   })
+  }
+
+  onEventResize(ev, event) {
+    const start = event.start().format('hh:mma');
+    const end = event.end().format('hh:mma');
+    console.log(event);
+    event.set({ content: `${event.attributes.id}` });
+
+    // update the events start time and endtime
+    this.props.changeEventTime(event.attributes.id, event.start(), event.end());
   }
 
   render() {
@@ -137,15 +147,17 @@ class Home extends React.Component {
     const events = new Dayz.EventsCollection(newEvents);
 
     const lat =
-      this.props.location && typeof this.props.location[0].geometry.location.lat === "function"
+      this.props.location &&
+      typeof this.props.location[0].geometry.location.lat === 'function'
         ? this.props.location[0].geometry.location.lat()
         : this.props.location[0].geometry.location.lat;
     const lng =
-      this.props.location && typeof this.props.location[0].geometry.location.lng === "function"
+      this.props.location &&
+      typeof this.props.location[0].geometry.location.lng === 'function'
         ? this.props.location[0].geometry.location.lng()
         : this.props.location[0].geometry.location.lng;
 
-    console.log("LOCATION");
+    console.log('LOCATION');
     console.log(lat);
     console.log(lng);
 
@@ -184,6 +196,7 @@ class Home extends React.Component {
             date={this.props.selected_time}
             events={events}
             onCloseClick={this.onCloseClick}
+            onEventResize={this.onEventResize}
           />
         </div>
       </div>
@@ -208,6 +221,9 @@ const mapDispatchToProps = dispatch => ({
   },
   setSelectedTime: time => {
     dispatch(setTime(time));
+  },
+  changeEventTime: (id, start, end) => {
+    dispatch(changeEventTime(id, start, end));
   },
 });
 
