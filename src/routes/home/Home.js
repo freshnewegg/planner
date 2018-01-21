@@ -86,11 +86,19 @@ class Home extends React.Component {
   }
 
   render() {
+    // if there's some stuff in saved_events, it came from server so display it o.w display localcache stuff
     console.log(this.props);
+    let specifiedEvents = this.props.events;
+    // console.log(JSON.parse(this.props.saved_events));
+    // let specifiedEvents = this.props.saved_events ? JSON.parse(this.props.saved_events).activities : this.props.events;
     const newEvents = [];
-    for (let i = 0; i < this.props.events.length; i++) {
-      const event = this.props.events[i];
-      console.log(event.id);
+
+    if (this.props.events.length == 0) {
+      specifiedEvents = JSON.parse(this.props.saved_events)[0].activities;
+    }
+
+    for (let i = 0; i < specifiedEvents.length; i++) {
+      const event = specifiedEvents[i];
       newEvents.push({
         content: event.content,
         resizable: event.resizable,
@@ -103,7 +111,6 @@ class Home extends React.Component {
     const events = new Dayz.EventsCollection(newEvents);
     // if (this.props.location) {
 
-    console.log(this.props.location);
     const lat =
       this.props.location && this.props.location[0].geometry.location.lat
         ? this.props.location[0].geometry.location.lat
@@ -160,6 +167,7 @@ const mapStateToProps = state => ({
   location: state.map.location,
   events: state.plan.events,
   mapped_restaurants: state.mapped_restaurants,
+  saved_events: state.saved_events,
 });
 
 const mapDispatchToProps = dispatch => ({

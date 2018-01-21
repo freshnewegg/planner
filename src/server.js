@@ -169,10 +169,15 @@ async function setUpBase(initialState, req, res) {
     query: req.query,
   });
 
+  console.log('WTF!!!');
+
   if (route.redirect) {
     res.redirect(route.status || 302, route.redirect);
     return;
   }
+
+  console.log(route);
+  console.log('WTF!!!2');
 
   const data = { ...route };
   data.children = ReactDOM.renderToString(
@@ -188,8 +193,6 @@ async function setUpBase(initialState, req, res) {
     apiUrl: config.api.clientUrl,
     state: context.store.getState(),
   };
-
-  console.log('WTF');
 
   const html = ReactDOM.renderToStaticMarkup(<Html {...data} />);
   res.status(route.status || 200);
@@ -226,18 +229,31 @@ app.get('/food/breakfast', async (req, res, next) => {
   await setUpBase(initialState, req, res);
 });
 
-app.get('/plan/:id', (req, res) => {
-  const id = req.params.id;
-  Plan.find(
-    {
-      permalink: id,
-    },
-    (err, plan) => {
-      res.json(plan);
-    },
-  ).catch(err => {
-    res.status(404).send('not found');
-  });
+app.get('/plan/:id', async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const plan = await Plan.find(
+      {
+        permalink: id,
+      },
+      (err, plan) => plan,
+    ).catch(err => {
+      console.log(err);
+      res.status(404).send('not found');
+    });
+
+    const initialState = {
+      saved_events: JSON.stringify(plan),
+    };
+
+    console.log('STATE');
+    // console.log(JSON.stringify(plan));
+    // console.log(initialState);
+
+    await setUpBase(initialState, req, res);
+  } catch (err) {
+    next(err);
+  }
 });
 
 /*
@@ -245,7 +261,6 @@ CATCH ALL REMAINING GET REQUESTS
  */
 
 app.get('*', async (req, res, next) => {
-  // console.log(req.path);
   try {
     // const css = new Set();
     //
