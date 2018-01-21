@@ -18,6 +18,8 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import { Col, Panel } from 'react-bootstrap';
 import Lightbox from 'react-image-lightbox';
 import { setLightboxStatus } from '../../actions/lightbox';
+import { placesUrl, g_api_key, detailsUrl, photosUrl } from '../../constants';
+import { fetchPhotos } from '../../actions/plan';
 
 let images = [
   'https://yt3.ggpht.com/-KdgJnz1HIdQ/AAAAAAAAAAI/AAAAAAAAAAA/4vVN7slJqj4/s900-c-k-no-mo-rj-c0xffffff/photo.jpg',
@@ -28,14 +30,6 @@ class FoodList extends React.Component {
     super(props);
     this.state = {
       photoIndex: 0,
-      placesUrl:
-        'https://maps.googleapis.com/maps/api/place/textsearch/json?query=',
-      key: '&key=AIzaSyBupkySfNlvYgfI2QEs9-mXANFwL_JwTmM',
-      detailsUrl:
-        'https://maps.googleapis.com/maps/api/place/details/json?placeid=',
-      photoUrl:
-        'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=',
-      photoKey: '&key=AIzaSyBupkySfNlvYgfI2QEs9-mXANFwL_JwTmM',
     };
   }
   static propTypes = {};
@@ -43,55 +37,18 @@ class FoodList extends React.Component {
   componentWillReceiveProps(newProps) {
     // create the fetch url
     // console.log(this.state.placesUrl.concat(newProps.selectedActivity ? newProps.selectedActivity.replace(/ /g, '+') : '', this.state.key));
-    const url = this.state.placesUrl.concat(
+    const url = placesUrl.concat(
       newProps.selectedActivity
         ? newProps.selectedActivity.replace(/ /g, '+')
         : '',
-      this.state.key,
+      g_api_key,
     );
 
     if (newProps.lightboxOpen) {
-      fetch(url).then(resp => {
-        resp.json().then(result => {
-          console.log(result);
-          if (result.results.length > 0) {
-            if (result.results[0]) {
-              // get the photo details
-              const detailUrl = this.state.detailsUrl.concat(
-                result.results[0].place_id,
-                this.state.key,
-              );
-
-              console.log(detailUrl);
-
-              fetch(detailUrl).then(resp => {
-                resp.json().then(result => {
-                  const photos = result.result.photos;
-                  if (photos.length == 10) {
-                    const newArr = [];
-                    for (let i = 0; i < 10; i++) {
-                      console.log(
-                        this.state.photoUrl.concat(
-                          photos[i].photo_reference,
-                          this.state.photoKey,
-                        ),
-                      );
-                      newArr.push(
-                        this.state.photoUrl.concat(
-                          photos[i].photo_reference,
-                          this.state.photoKey,
-                        ),
-                      );
-                    }
-                    images = newArr;
-                    this.setState({
-                      photoIndex: (this.state.photoIndex + 1) % images.length,
-                    });
-                  }
-                });
-              });
-            }
-          }
+      fetchPhotos(newProps.selectedActivity).then(res => {
+        images = res;
+        this.setState({
+          photoIndex: (this.state.photoIndex + 1) % images.length,
         });
       });
     }
@@ -118,7 +75,7 @@ class FoodList extends React.Component {
           address: place.location.address1,
           hours: place.is_closed ? 'Closed' : 'Open',
           website: place.url,
-          id: "ADD"
+          id: 'ADD',
         });
       }
     }

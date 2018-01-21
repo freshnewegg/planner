@@ -10,3 +10,11 @@ export const SET_SELECTED_TIME = 'SET_SELECTED_TIME';
 export const CHANGE_EVENT_TIME = 'CHANGE_EVENT_TIME';
 
 export const host = 'http://localhost:3000/plan/';
+
+export const placesUrl =
+  'https://maps.googleapis.com/maps/api/place/textsearch/json?query=';
+export const g_api_key = '&key=AIzaSyBupkySfNlvYgfI2QEs9-mXANFwL_JwTmM';
+export const detailsUrl =
+  'https://maps.googleapis.com/maps/api/place/details/json?placeid=';
+export const photosUrl =
+  'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=';

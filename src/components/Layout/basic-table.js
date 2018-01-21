@@ -48,7 +48,16 @@ class BasicTable extends React.Component {
     console.log(end);
 
     this.props.addNewEvent({
-      content: row.name,
+      content: row.name.concat(
+        ' | ',
+        row.type,
+        ' | ',
+        row.rating,
+        ' | ',
+        row.price,
+        ' | ',
+        row.address,
+      ),
       id: row.id,
       resizable: { step: 15 },
       range: moment.range(

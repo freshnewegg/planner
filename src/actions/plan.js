@@ -5,6 +5,10 @@ import {
   REMOVE_EVENT,
   SET_SELECTED_TIME,
   CHANGE_EVENT_TIME,
+  placesUrl,
+  g_api_key,
+  detailsUrl,
+  photosUrl,
 } from '../constants';
 
 export function addEvent(event) {
@@ -37,4 +41,39 @@ export function changeEventTime(id, start, end) {
       end,
     },
   };
+}
+
+export function fetchPhotos(selectedActivity) {
+  const url = placesUrl.concat(
+    selectedActivity ? selectedActivity.replace(/ /g, '+') : '',
+    g_api_key,
+  );
+  return fetch(url)
+    .then(resp => resp.json())
+    .then(result => {
+      if (result.results.length > 0) {
+        const detailUrl = detailsUrl.concat(
+          result.results[0].place_id,
+          g_api_key,
+        );
+
+        return fetch(detailUrl)
+          .then(resp => resp.json())
+          .then(detailResult => {
+            const photos = detailResult.result.photos;
+            if (photos.length == 10) {
+              const newArr = [];
+              for (let i = 0; i < 10; i++) {
+                console.log(
+                  photosUrl.concat(photos[i].photo_reference, g_api_key),
+                );
+                newArr.push(
+                  photosUrl.concat(photos[i].photo_reference, g_api_key),
+                );
+              }
+              return newArr;
+            }
+          });
+      }
+    });
 }

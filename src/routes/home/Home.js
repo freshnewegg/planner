@@ -21,10 +21,16 @@ import { connect } from 'react-redux';
 import { setMapVariable } from '../../actions/map';
 import { removeEvent, setTime, changeEventTime } from '../../actions/plan';
 import { host } from '../../constants/';
+import { setLightboxStatus } from '../../actions/lightbox';
+import { placesUrl, g_api_key, detailsUrl, photosUrl } from '../../constants';
 
 const {
   SearchBox,
 } = require('react-google-maps/lib/components/places/SearchBox');
+
+const images = [
+  'https://yt3.ggpht.com/-KdgJnz1HIdQ/AAAAAAAAAAI/AAAAAAAAAAA/4vVN7slJqj4/s900-c-k-no-mo-rj-c0xffffff/photo.jpg',
+];
 
 class Home extends React.Component {
   static propTypes = {};
@@ -34,6 +40,7 @@ class Home extends React.Component {
     this.state = {
       permalink: '',
       weather: '',
+      photoIndex: 0,
     };
     this.handleDateSelect = this.handleDateSelect.bind(this);
     this.onCloseClick = this.onCloseClick.bind(this);
@@ -83,8 +90,6 @@ class Home extends React.Component {
       }
     }
   }
-
-  getWeather() {}
 
   componentDidMount() {
     // TODO: set the current day to the day of the saved event
@@ -161,6 +166,8 @@ class Home extends React.Component {
     console.log(lat);
     console.log(lng);
 
+    const { photoIndex } = this.state;
+
     return (
       <div className={s.root}>
         <div className={s.container}>
@@ -185,7 +192,7 @@ class Home extends React.Component {
           </div>
           <div className={s.action_bar_wrapper}>
             <a href={`/food/breakfast?latitude=${lat}&longitude=${lng}`}>
-              <button type="button">Add Breakfast</button>s
+              <button type="button">Add Breakfast</button>
             </a>
           </div>
         </div>
@@ -210,6 +217,7 @@ const mapStateToProps = state => ({
   mapped_restaurants: state.mapped_restaurants,
   saved_events: state.saved_events,
   selected_time: moment(state.plan.time),
+  lightboxOpen: state.lightbox.lightboxOpen,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -224,6 +232,9 @@ const mapDispatchToProps = dispatch => ({
   },
   changeEventTime: (id, start, end) => {
     dispatch(changeEventTime(id, start, end));
+  },
+  setLightBoxStatus: status => {
+    dispatch(setLightboxStatus(status));
   },
 });
 
