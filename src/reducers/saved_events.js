@@ -1,3 +1,3 @@
-export default function saved_events(state = {}, action) {
+export default function saved_events(state = '', action) {
   return state;
 }

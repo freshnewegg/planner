@@ -19,7 +19,7 @@ import Link from '../../components/Link';
 import PlacesWithStandaloneSearchBox from '../../components/Map/SearchBox';
 import { connect } from 'react-redux';
 import { setMapVariable } from '../../actions/map';
-import { removeEvent } from '../../actions/plan';
+import { removeEvent, setTime } from '../../actions/plan';
 import { host } from '../../constants/';
 
 const {
@@ -32,8 +32,6 @@ class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      startDate: moment(),
-      startDate_str: moment().toISOString(),
       permalink: '',
     };
     this.handleDateSelect = this.handleDateSelect.bind(this);
@@ -42,9 +40,7 @@ class Home extends React.Component {
   }
 
   handleDateSelect(date) {
-    this.setState({
-      startDate: date,
-    });
+    this.props.setSelectedTime(date);
   }
 
   onCloseClick(index) {
@@ -63,25 +59,35 @@ class Home extends React.Component {
         ? this.props.location[0].formatted_address
         : 'New York, NY, USA',
     );
-    console.log(this.state.startDate.toISOString());
 
-    if (this.props.location && this.state.startDate) {
-      fetch(url, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          city: this.props.location
-            ? this.props.location[0].formatted_address
-            : 'New York, NY, USA',
-          date: this.state.startDate.toISOString(),
-          activities: this.props.events,
-        }),
-      })
-        .then(res => res.json())
-        .then(ans => this.setState({ permalink: host.concat(ans.link) }));
+    if (this.props.events.length > 0) {
+      if (this.props.location && this.props.selected_time) {
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            city: this.props.location
+              ? this.props.location[0].formatted_address
+              : 'New York, NY, USA',
+            date: this.props.selected_time.toISOString(),
+            activities: this.props.events,
+          }),
+        })
+          .then(res => res.json())
+          .then(ans => this.setState({ permalink: host.concat(ans.link) }));
+      }
+    }
+  }
+
+  componentDidMount() {
+    // TODO: set the current day to the day of the saved event
+    if (this.props.events.length == 0 && this.props.saved_events != '') {
+      const specifiedEvents = JSON.parse(this.props.saved_events)[0].activities;
+      const startTime = moment(specifiedEvents[0].date);
+      this.setState({ startDate: startTime });
     }
   }
 
@@ -93,7 +99,7 @@ class Home extends React.Component {
     // let specifiedEvents = this.props.saved_events ? JSON.parse(this.props.saved_events).activities : this.props.events;
     const newEvents = [];
 
-    if (this.props.events.length == 0) {
+    if (this.props.events.length == 0 && this.props.saved_events != '') {
       specifiedEvents = JSON.parse(this.props.saved_events)[0].activities;
     }
 
@@ -137,7 +143,7 @@ class Home extends React.Component {
             <div className={s.action_bar_wrapper}>
               <div className={s.date_text}>Date:</div>
               <DatePicker
-                selected={this.state.startDate}
+                selected={this.props.selected_time}
                 onChange={this.handleDateSelect}
               />
             </div>
@@ -153,7 +159,7 @@ class Home extends React.Component {
         <div className={s.timeline}>
           <Dayz
             display="day"
-            date={this.state.startDate}
+            date={this.props.selected_time}
             events={events}
             onCloseClick={this.onCloseClick}
           />
@@ -168,6 +174,7 @@ const mapStateToProps = state => ({
   events: state.plan.events,
   mapped_restaurants: state.mapped_restaurants,
   saved_events: state.saved_events,
+  selected_time: moment(state.plan.time),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -176,6 +183,9 @@ const mapDispatchToProps = dispatch => ({
   },
   removeEvent: event => {
     dispatch(removeEvent(event));
+  },
+  setSelectedTime: time => {
+    dispatch(setTime(time));
   },
 });
 

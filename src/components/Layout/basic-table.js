@@ -15,9 +15,7 @@ class BasicTable extends React.Component {
     this.buttonFormatter = this.buttonFormatter.bind(this);
     this.addEvent = this.addEvent.bind(this);
     this.onSelectRow = this.onSelectRow.bind(this);
-    this.state = {
-      startDate: moment(),
-    };
+    this.state = {};
   }
 
   buttonFormatter(cell, row) {
@@ -54,11 +52,11 @@ class BasicTable extends React.Component {
       id: row.id,
       resizable: { step: 15 },
       range: moment.range(
-        this.state.startDate
+        this.props.selected_time
           .clone()
           .startOf('day')
           .add(end, 'hour'),
-        this.state.startDate
+        this.props.selected_time
           .clone()
           .startOf('day')
           .add(end + 1 < 24 ? end + 1 : end, 'hour'),
@@ -122,6 +120,7 @@ class BasicTable extends React.Component {
 const mapStateToProps = state => ({
   events: state.plan.events,
   lightboxOpen: state.lightbox.lightboxOpen,
+  selected_time: moment(state.plan.time),
 });
 
 const mapDispatchToProps = dispatch => ({
