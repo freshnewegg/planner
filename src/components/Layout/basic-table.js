@@ -59,6 +59,7 @@ class BasicTable extends React.Component {
         row.address,
       ),
       id: row.id,
+      searchTerm: row.name.concat(' ', row.address).replace(/ /g, '+'),
       resizable: { step: 15 },
       range: moment.range(
         this.props.selected_time
@@ -138,9 +139,6 @@ const mapDispatchToProps = dispatch => ({
   },
   setLightBoxStatus: status => {
     dispatch(setLightboxStatus(status));
-  },
-  selectActivity: activity => {
-    dispatch(setSelectedActivity(activity));
   },
 });
 

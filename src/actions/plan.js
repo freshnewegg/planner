@@ -44,6 +44,7 @@ export function changeEventTime(id, start, end) {
 }
 
 export function fetchPhotos(selectedActivity) {
+  // console.log(this.state.placesUrl.concat(newProps.selectedActivity ? newProps.selectedActivity.replace(/ /g, '+') : '', this.state.key));
   const url = placesUrl.concat(
     selectedActivity ? selectedActivity.replace(/ /g, '+') : '',
     g_api_key,

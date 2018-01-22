@@ -35,15 +35,6 @@ class FoodList extends React.Component {
   static propTypes = {};
 
   componentWillReceiveProps(newProps) {
-    // create the fetch url
-    // console.log(this.state.placesUrl.concat(newProps.selectedActivity ? newProps.selectedActivity.replace(/ /g, '+') : '', this.state.key));
-    const url = placesUrl.concat(
-      newProps.selectedActivity
-        ? newProps.selectedActivity.replace(/ /g, '+')
-        : '',
-      g_api_key,
-    );
-
     if (newProps.lightboxOpen) {
       fetchPhotos(newProps.selectedActivity).then(res => {
         images = res;
@@ -56,7 +47,6 @@ class FoodList extends React.Component {
 
   onClose() {
     this.props.setLightBoxStatus(false);
-    this.setState({ imagesDone: true });
   }
 
   render() {

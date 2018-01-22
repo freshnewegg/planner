@@ -16,19 +16,25 @@ import moment from 'moment';
 import picker_style from 'react-datepicker/dist/react-datepicker.css';
 import dayz_style from 'dayz/dist/dayz.css';
 import Link from '../../components/Link';
+import Lightbox from 'react-image-lightbox';
 import PlacesWithStandaloneSearchBox from '../../components/Map/SearchBox';
 import { connect } from 'react-redux';
 import { setMapVariable } from '../../actions/map';
-import { removeEvent, setTime, changeEventTime } from '../../actions/plan';
+import {
+  removeEvent,
+  setTime,
+  changeEventTime,
+  fetchPhotos,
+} from '../../actions/plan';
 import { host } from '../../constants/';
-import { setLightboxStatus } from '../../actions/lightbox';
+import { setLightboxStatus, setSelectedActivity } from '../../actions/lightbox';
 import { placesUrl, g_api_key, detailsUrl, photosUrl } from '../../constants';
 
 const {
   SearchBox,
 } = require('react-google-maps/lib/components/places/SearchBox');
 
-const images = [
+let images = [
   'https://yt3.ggpht.com/-KdgJnz1HIdQ/AAAAAAAAAAI/AAAAAAAAAAA/4vVN7slJqj4/s900-c-k-no-mo-rj-c0xffffff/photo.jpg',
 ];
 
@@ -46,6 +52,11 @@ class Home extends React.Component {
     this.onCloseClick = this.onCloseClick.bind(this);
     this.generatePermaLink = this.generatePermaLink.bind(this);
     this.onEventResize = this.onEventResize.bind(this);
+    this.onEventClick = this.onEventClick.bind(this);
+  }
+
+  onClose() {
+    this.props.setLightBoxStatus(false);
   }
 
   handleDateSelect(date) {
@@ -54,6 +65,13 @@ class Home extends React.Component {
 
   onCloseClick(index) {
     this.props.removeEvent(index);
+  }
+
+  onEventClick(ev, event) {
+    console.log('CLICK');
+    console.log(event.attributes.searchTerm);
+    this.props.selectActivity(event.attributes.searchTerm);
+    this.props.setLightBoxStatus(true);
   }
 
   generatePermaLink() {
@@ -117,13 +135,28 @@ class Home extends React.Component {
   }
 
   onEventResize(ev, event) {
-    const start = event.start().format('hh:mma');
-    const end = event.end().format('hh:mma');
-    console.log(event);
-    event.set({ content: `${event.attributes.id}` });
+    // const start = event.start().format('hh:mma');
+    // const end = event.end().format('hh:mma');
+    // console.log(event);
+    // event.set({ content: `${event.attributes.id}` });
 
     // update the events start time and endtime
     this.props.changeEventTime(event.attributes.id, event.start(), event.end());
+  }
+
+  componentWillReceiveProps(newProps) {
+    console.log('SECLECTED1');
+    console.log(newProps);
+    if (newProps.lightboxOpen && newProps.selectedActivity) {
+      console.log('SECLECTED');
+      console.log(newProps.selectedActivity);
+      fetchPhotos(newProps.selectedActivity).then(res => {
+        images = res;
+        this.setState({
+          photoIndex: (this.state.photoIndex + 1) % images.length,
+        });
+      });
+    }
   }
 
   render() {
@@ -144,6 +177,7 @@ class Home extends React.Component {
         content: event.content,
         resizable: event.resizable,
         id: i,
+        searchTerm: event.searchTerm,
         event_id: event.id,
         range: moment.range(moment(event.range.start), moment(event.range.end)),
       });
@@ -162,15 +196,29 @@ class Home extends React.Component {
         ? this.props.location[0].geometry.location.lng()
         : this.props.location[0].geometry.location.lng;
 
-    console.log('LOCATION');
-    console.log(lat);
-    console.log(lng);
-
     const { photoIndex } = this.state;
 
     return (
       <div className={s.root}>
         <div className={s.container}>
+          {this.props.lightboxOpen && (
+            <Lightbox
+              mainSrc={images[photoIndex]}
+              nextSrc={images[(photoIndex + 1) % images.length]}
+              prevSrc={images[(photoIndex + images.length - 1) % images.length]}
+              onCloseRequest={() => this.onClose()}
+              onMovePrevRequest={() =>
+                this.setState({
+                  photoIndex: (photoIndex + images.length - 1) % images.length,
+                })
+              }
+              onMoveNextRequest={() =>
+                this.setState({
+                  photoIndex: (photoIndex + 1) % images.length,
+                })
+              }
+            />
+          )}
           <div className={s.action_bar_wrapper}>
             <h1>Your Current Plan</h1>
             <h1>
@@ -202,13 +250,15 @@ class Home extends React.Component {
             display="day"
             date={this.props.selected_time}
             events={events}
-            onCloseClick={this.onCloseClick}
+            onCloseClick={() => this.onCloseClick()}
             onEventResize={this.onEventResize}
+            onEventClick={this.onEventClick}
           />
         </div>
       </div>
     );
   }
+  // onEventClick={() => this.props.setLightBoxStatus(true)}
 }
 
 const mapStateToProps = state => ({
@@ -218,6 +268,7 @@ const mapStateToProps = state => ({
   saved_events: state.saved_events,
   selected_time: moment(state.plan.time),
   lightboxOpen: state.lightbox.lightboxOpen,
+  selectedActivity: state.lightbox.selectedActivity,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -235,6 +286,9 @@ const mapDispatchToProps = dispatch => ({
   },
   setLightBoxStatus: status => {
     dispatch(setLightboxStatus(status));
+  },
+  selectActivity: activity => {
+    dispatch(setSelectedActivity(activity));
   },
 });
 
