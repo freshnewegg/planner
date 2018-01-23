@@ -64,6 +64,7 @@ class Home extends React.Component {
   }
 
   onCloseClick(index) {
+    alert(index);
     this.props.removeEvent(index);
   }
 
@@ -279,7 +280,7 @@ class Home extends React.Component {
             display="day"
             date={this.props.selected_time}
             events={events}
-            onCloseClick={() => this.onCloseClick()}
+            onCloseClick={this.onCloseClick}
             onEventResize={this.onEventResize}
             onEventClick={this.onEventClick}
           />

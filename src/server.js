@@ -246,14 +246,14 @@ app.get('/plan/:id', async (req, res, next) => {
       res.status(404).send('not found');
     });
 
-    // console.log("YOOO");
-    // console.log(plan);
-    // console.log(plan[0].date);
+    console.log('YOOO');
+    console.log(plan);
+    console.log(plan[0].date);
     const initialState = {
       saved_events: JSON.stringify(plan),
       plan: {
         time: plan[0].date,
-        events: [],
+        events: plan[0].activities,
       },
     };
 
