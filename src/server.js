@@ -200,15 +200,15 @@ async function setUpBase(initialState, req, res) {
 }
 
 // register custom endpoints
-app.get('/food/breakfast', async (req, res, next) => {
-  // TODO: SANITIZE USER INPUT
-
+app.get('/food/:type', async (req, res, next) => {
   try {
+    // TODO: SANITIZE USER INPUT
+    console.log(req.params.type);
     const key =
       'Bearer nBc98wIZ6B7xaCjUNT97AZ1SEEn70ZKpzMXc_dwJsq1CpQdq8s5PXs8uXX8Yv9L6dqPHR-1HdAC8sJ_qO-pnG016cckNTJnfSP2keueNPfvbBdAeIGsi6yeIu2dYWnYx';
-    const url = `https://api.yelp.com/v3/businesses/search?term=breakfast&latitude=${
-      req.query.latitude
-    }&longitude=${req.query.longitude}`;
+    const url = `https://api.yelp.com/v3/businesses/search?term=${
+      req.params.type
+    }&latitude=${req.query.latitude}&longitude=${req.query.longitude}`;
 
     const result = await nodeFetch(url, {
       headers: { Authorization: key },
@@ -246,8 +246,15 @@ app.get('/plan/:id', async (req, res, next) => {
       res.status(404).send('not found');
     });
 
+    // console.log("YOOO");
+    // console.log(plan);
+    // console.log(plan[0].date);
     const initialState = {
       saved_events: JSON.stringify(plan),
+      plan: {
+        time: plan[0].date,
+        events: [],
+      },
     };
 
     console.log('STATE');

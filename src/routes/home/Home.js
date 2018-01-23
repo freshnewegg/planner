@@ -87,7 +87,9 @@ class Home extends React.Component {
         : 'New York, NY, USA',
     );
 
-    if (this.props.events.length > 0) {
+    if (this.props.events.length == 0) {
+      alert('no events to save');
+    } else if (this.props.events.length > 0) {
       if (this.props.location && this.props.selected_time) {
         fetch(url, {
           method: 'POST',
@@ -185,6 +187,8 @@ class Home extends React.Component {
 
     const events = new Dayz.EventsCollection(newEvents);
 
+    console.log(this.props.location);
+    this.props.location[0].geometry.location.lat;
     const lat =
       this.props.location &&
       typeof this.props.location[0].geometry.location.lat === 'function'
@@ -221,17 +225,17 @@ class Home extends React.Component {
           )}
           <div className={s.action_bar_wrapper}>
             <h1>Your Current Plan</h1>
-            <h1>
-              Set Search Location: <PlacesWithStandaloneSearchBox />
-            </h1>
+            <p>
+              Search Location: <PlacesWithStandaloneSearchBox />
+            </p>
           </div>
           <div className={s.action_bar_wrapper}>
             <button type="button" onClick={() => this.generatePermaLink()}>
-              Generate Permalink
+              Generate Sharable Link
             </button>
-            <div>Permalink: {this.state.permalink}</div>
+            <div>Sharable Link: {this.state.permalink}</div>
             <div className={s.action_bar_wrapper}>
-              <div className={s.date_text}>Date:</div>
+              <div className={s.date_text}>Select Date:</div>
               <DatePicker
                 selected={this.props.selected_time}
                 onChange={this.handleDateSelect}
@@ -239,8 +243,33 @@ class Home extends React.Component {
             </div>
           </div>
           <div className={s.action_bar_wrapper}>
+            <h3>Food:</h3>
             <a href={`/food/breakfast?latitude=${lat}&longitude=${lng}`}>
               <button type="button">Add Breakfast</button>
+            </a>
+            <a href={`/food/brunch?latitude=${lat}&longitude=${lng}`}>
+              <button type="button">Add Brunch</button>
+            </a>
+            <a href={`/food/lunch?latitude=${lat}&longitude=${lng}`}>
+              <button type="button">Add Lunch</button>
+            </a>
+            <a href={`/food/dinner?latitude=${lat}&longitude=${lng}`}>
+              <button type="button">Add Dinner</button>
+            </a>
+            <a href={`/food/dessert?latitude=${lat}&longitude=${lng}`}>
+              <button type="button">Add Dessert</button>
+            </a>
+            <a href={`/food/romantic?latitude=${lat}&longitude=${lng}`}>
+              <button type="button">Add Good Date Restaurants</button>
+            </a>
+          </div>
+          <div className={s.action_bar_wrapper}>
+            <h3>Stuff to do:</h3>
+            <a href={`/food/nightlife?latitude=${lat}&longitude=${lng}`}>
+              <button type="button">Add Nightlife</button>
+            </a>
+            <a href={`/food/bars?latitude=${lat}&longitude=${lng}`}>
+              <button type="button">Add Bars</button>
             </a>
           </div>
         </div>

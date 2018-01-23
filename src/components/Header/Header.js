@@ -12,28 +12,23 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Header.css';
 import Link from '../Link';
 import Navigation from '../Navigation';
-import logoUrl from './logo-small.png';
-import logoUrl2x from './logo-small@2x.png';
+import logoUrl from './logo.png';
+import logoUrl2x from './logo.png';
 
 class Header extends React.Component {
   render() {
     return (
       <div className={s.root}>
         <div className={s.container}>
-          <Navigation />
           <Link className={s.brand} to="/">
             <img
               src={logoUrl}
               srcSet={`${logoUrl2x} 2x`}
-              width="38"
-              height="38"
+              width="150"
+              height="120"
               alt="React"
             />
-            <span className={s.brandTxt}>LetsDoSomethingPlanner</span>
           </Link>
-          <div className={s.banner}>
-            <p className={s.bannerDesc}>Planning made easy</p>
-          </div>
         </div>
       </div>
     );

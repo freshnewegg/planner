@@ -20,7 +20,7 @@
 
 .container {
   margin: 0 auto;
-  padding: 20px 0;
+  padding: 0 0;
   max-width: var(--max-content-width);
 }
 
@@ -40,7 +40,7 @@
 
 .bannerDesc {
   padding: 0;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.5);
   font-size: 1.25em;
   margin: 0;
 }

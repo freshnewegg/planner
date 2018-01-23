@@ -33,7 +33,7 @@ export default function configureStore(initialState, helpersConfig) {
   const store = createStore(rootReducer, initialState, enhancer);
 
   // begin periodically persisting the store
-  persistStore(store);
+  persistStore(store, { blacklist: ['restaurants', 'mapped_restaurants'] });
 
   // Hot reload reducers (requires Webpack or Browserify HMR to be enabled)
   if (__DEV__ && module.hot) {

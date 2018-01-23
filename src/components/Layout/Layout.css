@@ -19,6 +19,11 @@
  * Base styles
  * ========================================================================== */
 
+.flexStyle {
+  display: flex;
+  flex-direction: column;
+}
+
 html {
   color: #222;
   font-weight: 100;

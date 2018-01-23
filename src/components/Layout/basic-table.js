@@ -140,6 +140,9 @@ const mapDispatchToProps = dispatch => ({
   setLightBoxStatus: status => {
     dispatch(setLightboxStatus(status));
   },
+  selectActivity: activity => {
+    dispatch(setSelectedActivity(activity));
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BasicTable);
