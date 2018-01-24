@@ -9,7 +9,9 @@ export const SET_SELECTED_ACTIVITY = 'SET_SELECTED_ACTIVITY';
 export const SET_SELECTED_TIME = 'SET_SELECTED_TIME';
 export const CHANGE_EVENT_TIME = 'CHANGE_EVENT_TIME';
 
-export const host = 'http://localhost:3000/plan/';
+export const host =
+  process.env.API_SERVER_URL ||
+  `http://localhost:${process.env.PORT || 3000}` + '/plan/';
 
 export const placesUrl =
   'https://maps.googleapis.com/maps/api/place/textsearch/json?query=';

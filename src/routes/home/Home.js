@@ -78,7 +78,7 @@ class Home extends React.Component {
   generatePermaLink() {
     // will pass the plan to the server
 
-    const url = 'http://localhost:3000/plan/';
+    const url = host;
     // console.log(this.props.mapped_restaurants);
     // console.log(this.props.events);
 
