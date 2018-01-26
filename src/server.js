@@ -33,7 +33,7 @@ import { setRuntimeVariable } from './actions/runtime';
 import config from './config';
 import Plan from './data/mongo/models/Plan';
 import 'react-bootstrap-table';
-import * as debug from 'debug';
+import { fetchPhotos } from './actions/plan';
 
 const mongoose = require('mongoose');
 
@@ -54,9 +54,9 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-//
 // Authentication
 // -----------------------------------------------------------------------------
+
 app.use(
   expressJwt({
     secret: config.auth.jwt.secret,
@@ -80,6 +80,7 @@ app.use(passport.initialize());
 if (__DEV__) {
   app.enable('trust proxy');
 }
+
 app.get(
   '/login/facebook',
   passport.authenticate('facebook', {
@@ -118,6 +119,18 @@ app.use(
 // Register server-side rendering middleware
 // -----------------------------------------------------------------------------
 
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-Requested-With,content-type, Authorization',
+  );
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
+
 app.post('/food/breakfast', async (req, res) => {
   console.log('POSTING');
 
@@ -134,6 +147,7 @@ async function setUpBase(initialState, req, res) {
   const fetch = createFetch(nodeFetch, {
     baseUrl: config.api.serverUrl,
     cookie: req.headers.cookie,
+    headers: { 'Access-Control-Allow-Origin': '*' },
   });
 
   const store = configureStore(initialState, {
@@ -198,6 +212,22 @@ async function setUpBase(initialState, req, res) {
   res.status(route.status || 200);
   res.send(`<!doctype html>${html}`);
 }
+
+import { placesUrl, g_api_key } from './constants';
+
+app.get('/lightbox/pics', async (req, res, next) => {
+  const selectedActivity = req.query.selected_activity;
+  const url = placesUrl.concat(
+    selectedActivity ? selectedActivity.replace(/ /g, '+') : '',
+    g_api_key,
+  );
+
+  const imageArray = await fetchPhotos(req.query.selected_activity).then(
+    result => ({ images: result }),
+  );
+
+  res.json(imageArray);
+});
 
 // register custom endpoints
 app.get('/food/:type', async (req, res, next) => {

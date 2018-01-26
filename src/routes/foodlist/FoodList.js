@@ -18,8 +18,7 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import { Col, Panel } from 'react-bootstrap';
 import Lightbox from 'react-image-lightbox';
 import { setLightboxStatus } from '../../actions/lightbox';
-import { placesUrl, g_api_key, detailsUrl, photosUrl } from '../../constants';
-import { fetchPhotos } from '../../actions/plan';
+import { pics_host } from '../../constants/index';
 
 let images = [
   'https://yt3.ggpht.com/-KdgJnz1HIdQ/AAAAAAAAAAI/AAAAAAAAAAA/4vVN7slJqj4/s900-c-k-no-mo-rj-c0xffffff/photo.jpg',
@@ -36,12 +35,18 @@ class FoodList extends React.Component {
 
   componentWillReceiveProps(newProps) {
     if (newProps.lightboxOpen) {
-      fetchPhotos(newProps.selectedActivity).then(res => {
-        images = res;
-        this.setState({
-          photoIndex: (this.state.photoIndex + 1) % images.length,
+      const newUrl = `${pics_host}?selected_activity=${newProps.selectedActivity.replace(
+        / /g,
+        '+',
+      )}`;
+      fetch(newUrl)
+        .then(res => res.json())
+        .then(res => {
+          images = res.images;
+          this.setState({
+            photoIndex: (this.state.photoIndex + 1) % images.length,
+          });
         });
-      });
     }
   }
 
@@ -50,7 +55,7 @@ class FoodList extends React.Component {
   }
 
   render() {
-    console.log(this.props);
+    // console.log(this.props);
     // console.log(this.props.restaurants);
     const places = [];
     if (this.props.restaurants) {

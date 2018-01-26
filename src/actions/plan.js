@@ -11,6 +11,8 @@ import {
   photosUrl,
 } from '../constants';
 
+import nodeFetch from 'node-fetch';
+
 export function addEvent(event) {
   return {
     type: ADD_EVENT,
@@ -49,8 +51,8 @@ export function fetchPhotos(selectedActivity) {
     selectedActivity ? selectedActivity.replace(/ /g, '+') : '',
     g_api_key,
   );
-  return fetch(url)
-    .then(resp => resp.json())
+  return nodeFetch(url)
+    .then(result => result.json())
     .then(result => {
       if (result.results.length > 0) {
         const detailUrl = detailsUrl.concat(
@@ -58,16 +60,13 @@ export function fetchPhotos(selectedActivity) {
           g_api_key,
         );
 
-        return fetch(detailUrl)
+        return nodeFetch(detailUrl)
           .then(resp => resp.json())
           .then(detailResult => {
             const photos = detailResult.result.photos;
             if (photos.length == 10) {
               const newArr = [];
               for (let i = 0; i < 10; i++) {
-                console.log(
-                  photosUrl.concat(photos[i].photo_reference, g_api_key),
-                );
                 newArr.push(
                   photosUrl.concat(photos[i].photo_reference, g_api_key),
                 );
@@ -76,5 +75,6 @@ export function fetchPhotos(selectedActivity) {
             }
           });
       }
+      console.log(result);
     });
 }

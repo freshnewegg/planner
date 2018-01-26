@@ -20,15 +20,10 @@ import Lightbox from 'react-image-lightbox';
 import PlacesWithStandaloneSearchBox from '../../components/Map/SearchBox';
 import { connect } from 'react-redux';
 import { setMapVariable } from '../../actions/map';
-import {
-  removeEvent,
-  setTime,
-  changeEventTime,
-  fetchPhotos,
-} from '../../actions/plan';
+import { removeEvent, setTime, changeEventTime } from '../../actions/plan';
 import { host } from '../../constants/';
 import { setLightboxStatus, setSelectedActivity } from '../../actions/lightbox';
-import { placesUrl, g_api_key, detailsUrl, photosUrl } from '../../constants';
+import { pics_host } from '../../constants/index';
 
 const {
   SearchBox,
@@ -138,11 +133,6 @@ class Home extends React.Component {
   }
 
   onEventResize(ev, event) {
-    // const start = event.start().format('hh:mma');
-    // const end = event.end().format('hh:mma');
-    // console.log(event);
-    // event.set({ content: `${event.attributes.id}` });
-
     // update the events start time and endtime
     this.props.changeEventTime(event.attributes.id, event.start(), event.end());
   }
@@ -153,12 +143,21 @@ class Home extends React.Component {
     if (newProps.lightboxOpen && newProps.selectedActivity) {
       console.log('SECLECTED');
       console.log(newProps.selectedActivity);
-      fetchPhotos(newProps.selectedActivity).then(res => {
-        images = res;
-        this.setState({
-          photoIndex: (this.state.photoIndex + 1) % images.length,
+
+      const newUrl = `${pics_host}?selected_activity=${newProps.selectedActivity.replace(
+        / /g,
+        '+',
+      )}`;
+      fetch(newUrl)
+        .then(res => res.json())
+        .then(res => {
+          if (res.images) {
+            images = res.images;
+            this.setState({
+              photoIndex: (this.state.photoIndex + 1) % images.length,
+            });
+          }
         });
-      });
     }
   }
 

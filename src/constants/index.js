@@ -13,6 +13,10 @@ export const host =
   process.env.API_SERVER_URL ||
   `http://localhost:${process.env.PORT || 3000}` + '/plan/';
 
+export const pics_host =
+  process.env.API_SERVER_URL ||
+  `http://localhost:${process.env.PORT || 3000}` + '/lightbox/pics';
+
 export const placesUrl =
   'https://maps.googleapis.com/maps/api/place/textsearch/json?query=';
 export const g_api_key = '&key=AIzaSyBupkySfNlvYgfI2QEs9-mXANFwL_JwTmM';
