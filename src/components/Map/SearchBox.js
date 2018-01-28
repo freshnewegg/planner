@@ -55,7 +55,7 @@ const PlacesWithStandaloneSearchBox = compose(
         placeholder="New York, Boston, San Fran..."
         style={{
           boxSizing: `border-box`,
-          border: `1px solid transparent`,
+          border: `1px solid`,
           width: `240px`,
           height: `32px`,
           padding: `0 12px`,

@@ -112,6 +112,7 @@ class Home extends React.Component {
     if (this.props.events.length == 0 && this.props.saved_events != '') {
       const specifiedEvents = JSON.parse(this.props.saved_events)[0].activities;
       const startTime = moment(specifiedEvents[0].date);
+      console.log(startTime);
       this.setState({ startDate: startTime });
     }
 
@@ -224,7 +225,7 @@ class Home extends React.Component {
             />
           )}
           <div className={s.action_bar_wrapper}>
-            <h1>Your Current Plan</h1>
+            <h1>Your Plan</h1>
             <p>
               Search Location: <PlacesWithStandaloneSearchBox />
             </p>
@@ -272,17 +273,17 @@ class Home extends React.Component {
               <button type="button">Add Bars</button>
             </a>
           </div>
-        </div>
 
-        <div className={s.timeline}>
-          <Dayz
-            display="day"
-            date={this.props.selected_time}
-            events={events}
-            onCloseClick={this.onCloseClick}
-            onEventResize={this.onEventResize}
-            onEventClick={this.onEventClick}
-          />
+          <div className={s.timeline}>
+            <Dayz
+              display="day"
+              date={this.props.selected_time}
+              events={events}
+              onCloseClick={this.onCloseClick}
+              onEventResize={this.onEventResize}
+              onEventClick={this.onEventClick}
+            />
+          </div>
         </div>
       </div>
     );
