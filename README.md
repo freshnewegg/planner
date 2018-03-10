@@ -1,6 +1,10 @@
 # Lets Do Something Planner
 
-A sharable itinerary for plannin gevents
+A sharable itinerary for planning food + events
+
+![Main Page](/public/mainpage.png?raw=true "Main Page")
+
+![Food](/public/foodpic.png?raw=true "Food")
 
 ## Getting Started
 
@@ -12,11 +16,19 @@ yarn start
 Deploying:
 I deploy with Digital Ocean but you could use anything
 
+## RoadMap
+
+* Add bootstrap
+* Clean up boilerplate code
+
+##Code Explaination
+
 ### Installing
 
 Here's a step by step guide of how to setup
 
-npm install
+yarn install
+yarn start
 
 You can see how the website looks at letsdosomethingplanner.com
 
@@ -24,18 +36,20 @@ You can see how the website looks at letsdosomethingplanner.com
 
 * [React Starter Kit](https://github.com/kriasoft/react-starter-kit) - The starter kit use
 * [Dayz](https://github.com/nathanstitt/dayz) - by Nathan Stitzgit for the calender
+* [react-image-lightbox](https://github.com/fritz-c/react-image-lightbox) for the lightbox
+* Express
+* ReactJS
+* Universal Router for navigation
+* Redux for state managementhttps://github.com/fritz-c/react-image-lightbox
+* Webpack for bundling
 
 ## Contributing
 
 Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
 ## Authors
 
-* **Edgar Wang** - *Initial work*
+* **Edgar Wang** - _Initial work_
 
 ## License
 
