@@ -2,8 +2,10 @@
 
 A sharable itinerary for planning food + events
 
+## Main Page
 ![Main Page](/public/mainpage.png?raw=true "Main Page")
 
+## Food Pics
 ![Food](/public/foodpic.png?raw=true "Food")
 
 ## Getting Started
