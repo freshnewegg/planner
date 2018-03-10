@@ -1,4 +1,4 @@
-# Project Title
+# Lets Do Something Planner
 
 A sharable itinerary for plannin gevents
 
