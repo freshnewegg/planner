@@ -23,14 +23,12 @@ I deploy with Digital Ocean but you could use anything
 * Add bootstrap
 * Clean up boilerplate code
 
-##Code Explaination
-
 ### Installing
 
 Here's a step by step guide of how to setup
 
-yarn install
-yarn start
+*yarn install
+*yarn start
 
 You can see how the website looks at letsdosomethingplanner.com
 
@@ -42,16 +40,13 @@ You can see how the website looks at letsdosomethingplanner.com
 * Express
 * ReactJS
 * Universal Router for navigation
-* Redux for state managementhttps://github.com/fritz-c/react-image-lightbox
+* Redux for state management
 * Webpack for bundling
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Authors
 
 * **Edgar Wang** - _Initial work_
+Hey! I like to make cool stuff! Show me what you've made :)
 
 ## License
 
